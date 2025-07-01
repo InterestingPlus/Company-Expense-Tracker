@@ -1,0 +1,30 @@
+{
+  "name": "company-expense-tracker-app-backend",
+  "version": "1.0.0",
+  "description": "Company Expense Tracker App using MERN Stack. R.D. Group of Industries Intership full stack Project.",
+  "keywords": [
+    "Node.js",
+    "Express.js",
+    "JWT",
+    "Auth",
+    "MongoDB"
+  ],
+  "license": "ISC",
+  "author": "Jatin Poriya",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
+    "nodemon": "^3.1.10"
+  }
+}
