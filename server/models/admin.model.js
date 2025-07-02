@@ -16,6 +16,13 @@ const adminSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    companyName: {
+      type: String,
+    },
+    currency: {
+      type: String,
+      default: "INR",
+    },
   },
   {
     timestamps: true,

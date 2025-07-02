@@ -53,13 +53,15 @@ export const loginAdmin = async (req, res) => {
       return;
     }
 
-    if (admin.password !== (await bcrypt.hash(password, 10))) {
-      res.status(400).json({ error: "Invalid Credentials!" });
-      return;
+    if (!(await bcrypt.compare(password, admin.password))) {
+      return res.status(400).json({ error: "Invalid Credentials!" });
     }
 
     const token = generateToken(admin);
-    console.log(admin);
+
+    console.log(
+      `Admin Logged in Successfully with Name : ${admin.name}, Email : ${admin.email}`
+    );
 
     res
       .status(200)

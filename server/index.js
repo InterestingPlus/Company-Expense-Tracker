@@ -3,6 +3,7 @@ import DBConnection from "./config/db.js";
 import { configDotenv } from "dotenv";
 import cors from "cors";
 import AdminRouter from "./routes/admin.route.js";
+import ExpenseRouter from "./routes/expense.route.js";
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ app.get("/", (req, res) => {
 
 // Admin Route
 app.use("/api/v1/admin", AdminRouter);
+app.use("/api/v1/expense", ExpenseRouter);
 
 // Expense Route
 // app.use("api/v1/expense", ExpenseRouter);

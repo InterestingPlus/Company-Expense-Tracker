@@ -1,0 +1,81 @@
+.login-page,
+.register-page {
+  min-height: 100dvh;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: sans-serif;
+
+  .login-box,
+  .register-box {
+    padding: 2.5rem 3rem;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+
+    .brand {
+      font-size: 1.7rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #222;
+    }
+
+    .title {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #555;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+
+      label {
+        text-align: left;
+        margin-top: 1rem;
+        font-weight: 600;
+        color: #00000082;
+      }
+
+      .input {
+        padding: 0.75rem 1rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.1s;
+
+        &:focus {
+          border-color: #4a90e2;
+          outline: none;
+        }
+      }
+
+      .btn {
+        margin-top: 1rem;
+        background-color: #2d5582;
+        color: white;
+        padding: 0.75rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+
+        &:hover {
+          background-color: #3a78c2;
+        }
+
+        &.view-btn {
+          background: #ffb158;
+        }
+      }
+    }
+  }
+}
+
+.register-page {
+  background: transparent;
+}
