@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import "./ExpenseForm.scss";
+import apiPath from "../isProduction";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     _id: "",
     description: "",
@@ -12,6 +17,34 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
     paymentMethod: "",
     receipt: null,
   });
+
+  const [categories, setCategories] = useState([
+    {
+      _id: "a1",
+      name: "Shopping",
+      icon: "🛍️",
+    },
+    {
+      _id: "b2",
+      name: "Food",
+      icon: "🍔",
+    },
+    {
+      _id: "c3",
+      name: "Travel",
+      icon: "🚗",
+    },
+    {
+      _id: "d4",
+      name: "Rent",
+      icon: "🏠",
+    },
+    {
+      _id: "e5",
+      name: "Misc",
+      icon: "📦",
+    },
+  ]);
 
   useEffect(() => {
     if (expense?._id) {
@@ -28,12 +61,37 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
     }
   }, [expense]);
 
+  async function getAllCategories() {
+    try {
+      const res = await axios.get(`${await apiPath()}/api/v1/category`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("All Categories:", res?.data?.data);
+      setCategories(res?.data?.data);
+    } catch (error) {
+      alert(error);
+    }
+  }
+
+  useEffect(() => {
+    getAllCategories();
+  }, []);
+
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "receipt") {
       setFormData({ ...formData, receipt: files[0] });
     } else {
       setFormData({ ...formData, [name]: value });
+    }
+
+    if (name === "category") {
+      if (value === "navigate") {
+        navigate("/category");
+      }
     }
   };
 
@@ -89,11 +147,14 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
           required
         >
           <option value="">Select category</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Food">Food</option>
-          <option value="Travel">Travel</option>
-          <option value="Rent">Rent</option>
-          <option value="Misc">Misc</option>
+
+          {categories?.map((category) => (
+            <option value={category._id}>
+              {category.icon} {category.name}
+            </option>
+          ))}
+
+          <option value="navigate">Modify Categories</option>
         </select>
       </label>
 
@@ -119,7 +180,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
           <option value="">Select payment method</option>
           <option value="Cash">Cash</option>
           <option value="UPI">UPI</option>
-          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Bank">Bank</option>
           <option value="Card">Card</option>
         </select>
       </label>

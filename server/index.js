@@ -4,6 +4,7 @@ import { configDotenv } from "dotenv";
 import cors from "cors";
 import AdminRouter from "./routes/admin.route.js";
 import ExpenseRouter from "./routes/expense.route.js";
+import CategoryRouter from "./routes/category.route.js";
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.get("/", (req, res) => {
 // Admin Route
 app.use("/api/v1/admin", AdminRouter);
 app.use("/api/v1/expense", ExpenseRouter);
+app.use("/api/v1/category", CategoryRouter);
 
 // Expense Route
 // app.use("api/v1/expense", ExpenseRouter);

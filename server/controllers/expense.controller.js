@@ -91,8 +91,6 @@ export const editExpense = async (req, res) => {
 };
 
 export const deleteExpense = async (req, res) => {
-  console.log("Delete Request Body:", req.body);
-
   if (!req.body._id) {
     return res.status(400).json({ error: "Expense ID is required." });
   }
@@ -120,5 +118,64 @@ export const deleteExpense = async (req, res) => {
     res
       .status(500)
       .json({ message: "Error deleting expense", error: error.message });
+  }
+};
+
+const months = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+export const MonthlySpendExpense = async (req, res) => {
+  let currentMonth = req.body?.month ? req.body.month : new Date().getMonth();
+
+  try {
+    const expense = await expenseModel.find({
+      adminId: req.admin.id,
+      date: {
+        $gte: new Date(new Date().getFullYear(), currentMonth, 1),
+        $lt: new Date(new Date().getFullYear(), currentMonth + 1, 1),
+      },
+    });
+
+    console.log(
+      `${months[currentMonth]} Expenses Fetched Successfully by ${req.admin.name}`
+    );
+
+    res.status(201).json({ data: expense });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
+  }
+};
+
+export const YearlySpendExpense = async (req, res) => {
+  let currentYear = req.body?.year ? req.body.year : new Date().getFullYear();
+
+  try {
+    const expense = await expenseModel.find({
+      adminId: req.admin.id,
+      date: {
+        $gte: new Date(currentYear, 0, 1),
+        $lt: new Date(currentYear + 1, 0, 1),
+      },
+    });
+
+    console.log(
+      `${currentYear} Expenses Fetched Successfully by ${req.admin.name}`
+    );
+
+    res.status(201).json({ data: expense });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
   }
 };
