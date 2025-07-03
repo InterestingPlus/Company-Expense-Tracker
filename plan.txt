@@ -1,0 +1,94 @@
+⚡ 5-Day Development Timeline
+🔥 Day 1: Project Setup + Authentication
+🚀 Goal: Set the foundation and secure the app for admin-only access.
+
+✅ Initialize both frontend (Vite + React + Tailwind) and backend (Node + Express)
+
+✅ Set up MongoDB Atlas & connect with Mongoose
+
+✅ Create Admin model & login API
+
+✅ Implement JWT authentication + protected routes
+
+✅ Create frontend login page with form validation
+
+✅ Save and use token for protected components
+
+Tools: bcrypt, jsonwebtoken, express-validator, axios, react-router, localStorage
+
+📁 Day 2: Expense Management (CRUD + Upload)
+💼 Goal: Core functionality for managing expenses.
+
+✅ Create Expense model (fields: amount, date, category, notes, payment method, receipt)
+
+✅ Backend APIs: Add / Edit / Delete / Get expenses
+
+✅ File upload setup using multer (local or Cloudinary)
+
+✅ Frontend forms to add/edit expenses
+
+✅ Receipt upload + display uploaded receipts
+
+Tools: multer, cloudinary (if used), react-hook-form, yup
+
+🔍 Day 3: Filtering, Search & Category Management
+🔎 Goal: Make data interactive and manageable.
+
+✅ Filter expenses by:
+
+Date range
+
+Category
+
+Payment method
+
+✅ Full-text search in description/notes
+
+✅ Category CRUD (add/edit/delete)
+
+✅ UI filters (dropdowns, search bar, date pickers)
+
+Tools: date-fns, react-datepicker, MongoDB $text search
+
+📊 Day 4: Dashboard, Reports & Export
+📈 Goal: Visual insights + export capability.
+
+✅ Show analytics: total monthly/yearly expenses
+
+✅ Add Pie/Line/Bar charts for expenses
+
+✅ Summary cards (monthly spend, highest category, etc.)
+
+✅ Export expenses to CSV and PDF
+
+✅ Generate reports by category/month/date
+
+Tools: recharts, chart.js, json2csv, jspdf, html2canvas
+
+🌳 Day 5: Budget Tree + Final Polish + Deployment
+🛠️ Goal: Complete visual module and go live.
+
+✅ Budget breakdown input (e.g., ₹1,00,000)
+
+✅ Interactive Tree/Sunburst/Treemap (category-wise)
+
+✅ Export tree to image/PDF
+
+✅ Final UI polish (Tailwind, responsive)
+
+✅ Host frontend on Vercel
+
+✅ Host backend on Render or Cyclic
+
+✅ Test on mobile/desktop + fix bugs
+
+Tools: nivo, d3.js, react-d3-tree, Vercel, Render, MongoDB Atlas
+
+🗓️ Timeline Summary Table
+Day	Focus Area	Key Modules
+1	Setup + Authentication	Login, JWT, MongoDB setup
+2	Expense CRUD + File Upload	Add/Edit/Delete, receipt upload
+3	Filtering + Category Management	Search, Filters, Category CRUD
+4	Dashboard + Reports	Charts, Analytics, PDF/CSV export
+5	Budget Tree + Final Touch + Deploy	Visualization, Hosting, Debugging
+

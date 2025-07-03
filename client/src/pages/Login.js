@@ -23,7 +23,7 @@ export default function Login() {
   };
 
   return (
-    <div className="login-page">
+    <main className="login-page">
       <div className="login-box">
         <h1 className="brand">Company Expense Tracker</h1>
         <h2 className="title">Login as a Admin</h2>
@@ -57,6 +57,6 @@ export default function Login() {
           </button>
         </form>
       </div>
-    </div>
+    </main>
   );
 }

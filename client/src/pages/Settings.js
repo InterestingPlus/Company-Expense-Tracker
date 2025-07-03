@@ -5,11 +5,11 @@ const Settings = () => {
   const { logout } = useAuth();
 
   return (
-    <div>
+    <main>
       <h1>Settings</h1>
 
       <button onClick={() => logout()}>Logout</button>
-    </div>
+    </main>
   );
 };
 

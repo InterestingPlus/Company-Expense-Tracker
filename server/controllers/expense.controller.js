@@ -91,29 +91,34 @@ export const editExpense = async (req, res) => {
 };
 
 export const deleteExpense = async (req, res) => {
-  const { description, notes, amount, category, date, paymentMethod, receipt } =
-    req.body;
+  console.log("Delete Request Body:", req.body);
+
+  if (!req.body._id) {
+    return res.status(400).json({ error: "Expense ID is required." });
+  }
 
   try {
-    const expense = await expenseModel.create({
-      description,
-      notes,
-      amount,
-      category,
-      date,
-      paymentMethod,
-      receipt,
-      adminId: req.admin._id,
+    const deletedExpense = await expenseModel.findOneAndDelete({
+      _id: req.body._id,
+      adminId: req.admin.id,
     });
 
+    if (!deletedExpense) {
+      return res.status(404).json({ error: "Expense not found." });
+    }
+
     console.log(
-      `Expense Added Successfully by ${req.admin.name},\n with Description : ${expense.description}, Amount : ${expense.amount}`
+      `✅ Expense Deleted by ${req.admin.name}: ${deletedExpense.description}`
     );
 
-    res
-      .status(201)
-      .json({ description: expense.description, amount: expense.amount });
+    res.status(200).json({
+      message: "Expense deleted successfully",
+      data: deletedExpense,
+    });
   } catch (error) {
-    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
+    console.error("❌ Error deleting expense:", error.message);
+    res
+      .status(500)
+      .json({ message: "Error deleting expense", error: error.message });
   }
 };

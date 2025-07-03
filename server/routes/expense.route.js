@@ -14,6 +14,6 @@ const ExpenseRouter = express.Router();
 ExpenseRouter.get("/", verifyToken, getAllExpense);
 ExpenseRouter.post("/", verifyToken, addExpense);
 ExpenseRouter.put("/", verifyToken, editExpense);
-ExpenseRouter.delete("/:id", verifyToken, deleteExpense);
+ExpenseRouter.delete("/", verifyToken, deleteExpense);
 
 export default ExpenseRouter;
