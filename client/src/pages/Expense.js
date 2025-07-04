@@ -7,6 +7,7 @@ import "./Expense.scss";
 
 import { ReactComponent as EditIcon } from "../assets/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../assets/icons/delete.svg";
+import { ReactComponent as NoExpenses } from "../assets/icons/no-data.svg";
 import { useNavigate } from "react-router-dom";
 
 const Expense = () => {
@@ -183,61 +184,128 @@ const Expense = () => {
     setEditExpense(expense);
     setOpenModal(true);
   };
-
   const [searchQuery, setSearchQuery] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [filterMethod, setFilterMethod] = useState("");
+
+  const [filterDate, setFilterDate] = useState("");
+  const [specificDate, setSpecificDate] = useState("");
+  const [specificMonth, setSpecificMonth] = useState("");
+  const [specificYear, setSpecificYear] = useState("");
+
   const [sortBy, setSortBy] = useState("");
+
   const [filteredExpenses, setFilteredExpenses] = useState([]);
 
   useEffect(() => {
-    const filtered =
-      searchQuery.trim().length > 0
-        ? expenses.filter(
-            (expense) =>
-              expense.description
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()) ||
-              expense.amount
-                .toString()
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase()) ||
-              expense.notes.toLowerCase().includes(searchQuery.toLowerCase())
-          )
-        : expenses;
-
-    setFilteredExpenses(filtered);
-  }, [searchQuery, expenses]);
-
-  useEffect(() => {
     let filtered = [...expenses];
+    const now = new Date();
 
-    // Filter by search
+    // 🔥 Auto-set filterDate visually when specificDate/Month/Year matches
+    const todayMatch =
+      specificDate &&
+      (() => {
+        const d = new Date(specificDate);
+        return (
+          d.getDate() === now.getDate() &&
+          d.getMonth() === now.getMonth() &&
+          d.getFullYear() === now.getFullYear()
+        );
+      })();
+
+    const thisMonthMatch =
+      specificMonth &&
+      (() => {
+        const d = new Date(specificMonth);
+        return (
+          d.getMonth() === now.getMonth() &&
+          d.getFullYear() === now.getFullYear()
+        );
+      })();
+
+    const thisYearMatch =
+      specificYear &&
+      (() => {
+        const y = new Date(`${specificYear}-01-01`);
+        return y.getFullYear() === now.getFullYear();
+      })();
+
+    // 🧠 Update filterDate to reflect match (visually in <select>)
+    if (todayMatch) setFilterDate("today");
+    else if (thisMonthMatch) setFilterDate("thisMonth");
+    else if (thisYearMatch) setFilterDate("thisYear");
+
+    // 🔄 Apply effective filterDate (from select or auto)
+    const effectiveFilterDate = filterDate;
+
+    if (effectiveFilterDate === "today") {
+      filtered = filtered.filter((exp) => {
+        const d = new Date(exp.date);
+        return (
+          d.getDate() === now.getDate() &&
+          d.getMonth() === now.getMonth() &&
+          d.getFullYear() === now.getFullYear()
+        );
+      });
+    } else if (effectiveFilterDate === "thisMonth") {
+      filtered = filtered.filter((exp) => {
+        const d = new Date(exp.date);
+        return (
+          d.getMonth() === now.getMonth() &&
+          d.getFullYear() === now.getFullYear()
+        );
+      });
+    } else if (effectiveFilterDate === "thisYear") {
+      filtered = filtered.filter((exp) => {
+        const d = new Date(exp.date);
+        return d.getFullYear() === now.getFullYear();
+      });
+    }
+
+    // 🔍 Search
     if (searchQuery.trim()) {
       filtered = filtered.filter(
         (expense) =>
           expense.description
             .toLowerCase()
             .includes(searchQuery.toLowerCase()) ||
-          expense.amount
-            .toString()
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          expense.notes.toLowerCase().includes(searchQuery.toLowerCase())
+          expense.amount.toString().includes(searchQuery) ||
+          expense.notes?.toLowerCase().includes(searchQuery)
       );
     }
 
-    // Filter by category
+    // 🎯 Category and Method
     if (filterCategory) {
       filtered = filtered.filter((exp) => exp.category === filterCategory);
     }
-
-    // Filter by payment method
     if (filterMethod) {
       filtered = filtered.filter((exp) => exp.paymentMethod === filterMethod);
     }
 
-    // Sorting
+    // 📅 Specific Date Filters
+    if (specificDate) {
+      filtered = filtered.filter((exp) => {
+        const expDate = new Date(exp.date).toISOString().split("T")[0];
+        return expDate === specificDate;
+      });
+    }
+
+    if (specificMonth) {
+      filtered = filtered.filter((exp) => {
+        const d = new Date(exp.date);
+        const y = d.getFullYear();
+        const m = (d.getMonth() + 1).toString().padStart(2, "0");
+        return `${y}-${m}` === specificMonth;
+      });
+    }
+
+    if (specificYear) {
+      filtered = filtered.filter(
+        (exp) => new Date(exp.date).getFullYear().toString() === specificYear
+      );
+    }
+
+    // ↕️ Sorting
     if (sortBy === "amount") {
       filtered.sort((a, b) => b.amount - a.amount);
     } else if (sortBy === "date") {
@@ -245,7 +313,17 @@ const Expense = () => {
     }
 
     setFilteredExpenses(filtered);
-  }, [searchQuery, filterCategory, filterMethod, sortBy, expenses]);
+  }, [
+    searchQuery,
+    filterCategory,
+    filterMethod,
+    specificDate,
+    specificMonth,
+    specificYear,
+    filterDate,
+    sortBy,
+    expenses,
+  ]);
 
   const categoryIcon = (categoryId) => {
     return (
@@ -264,51 +342,153 @@ const Expense = () => {
       <h1>Expenses</h1>
 
       <div className="filters">
-        <input
-          type="search"
-          id="search"
-          placeholder="Search..."
-          onInput={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-        />
+        <div className="search-filter">
+          <div className="search">
+            <input
+              type="search"
+              id="search"
+              placeholder="Search..."
+              onInput={(e) => {
+                setSearchQuery(e.target.value);
+              }}
+            />
+          </div>
 
-        <select
-          onChange={(e) => {
-            if (e.target.value === "navigate") {
-              navigate("/category");
-            }
+          <div className="filter">
+            <select
+              value={filterDate}
+              onChange={(e) => {
+                setSpecificDate("");
+                setSpecificMonth("");
+                setSpecificYear("");
+                setFilterDate(e.target.value);
+              }}
+              className={`${filterDate !== "" ? "active" : ""}`}
+            >
+              <option value="">All Time</option>
+              <option value="today">Today</option>
+              <option value="thisMonth">This Month</option>
+              <option value="thisYear">This Year</option>
+            </select>
 
-            setFilterCategory(e.target.value);
-          }}
-        >
-          <option value="">All Categories</option>
-          {categories.map((category) => (
-            <option key={category._id} value={category._id}>
-              {category.icon} {category.name}
-            </option>
-          ))}
-          <option value="navigate">Modify Categories</option>
-        </select>
+            <select
+              value={filterCategory}
+              onChange={(e) => {
+                if (e.target.value === "navigate") {
+                  navigate("/category");
+                }
 
-        <select onChange={(e) => setFilterMethod(e.target.value)}>
-          <option value="">All Methods</option>
-          {paymentMethods.map((method) => (
-            <option key={method._id} value={method.name}>
-              {method.name}
-            </option>
-          ))}
-        </select>
+                setFilterCategory(e.target.value);
+              }}
+              className={`${filterCategory !== "" ? "active" : ""}`}
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.icon} {category.name}
+                </option>
+              ))}
+              <option value="navigate">Modify Categories</option>
+            </select>
 
-        <select onChange={(e) => setSortBy(e.target.value)}>
-          <option value="">Sort By</option>
-          <option key="amount" value="amount">
-            Amount
-          </option>
-          <option key="date" value="date">
-            Date
-          </option>
-        </select>
+            <select
+              value={filterMethod}
+              onChange={(e) => setFilterMethod(e.target.value)}
+              className={`${filterMethod !== "" ? "active" : ""}`}
+            >
+              <option value="">All Methods</option>
+              {paymentMethods.map((method) => (
+                <option key={method._id} value={method.name}>
+                  {method.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="sort">
+          <span>Sort By :</span>
+          <input
+            type="radio"
+            name="sortBy"
+            value=""
+            id="none"
+            onChange={(e) => setSortBy(e.target.value)}
+          />
+          <label htmlFor="none">none</label>
+          <input
+            type="radio"
+            name="sortBy"
+            value="amount"
+            id="amount"
+            onChange={(e) => setSortBy(e.target.value)}
+          />
+          <label htmlFor="amount">Amount</label>
+          <input
+            type="radio"
+            name="sortBy"
+            value="date"
+            id="date"
+            onChange={(e) => setSortBy(e.target.value)}
+          />
+          <label htmlFor="date">Date</label>
+        </div>
+
+        <div className="date-filters">
+          Specific :
+          <div className="date-input">
+            <label htmlFor="date">Day</label>
+            <input
+              type="date"
+              name="date"
+              id="date"
+              value={specificDate}
+              onChange={(e) => {
+                setSpecificMonth("");
+                setSpecificYear("");
+                setFilterDate("");
+                setSpecificDate(e.target.value);
+              }}
+              className={`${specificDate !== "" ? "active" : ""}`}
+            />
+          </div>
+          <div className="date-input">
+            <label htmlFor="month">Month</label>
+            <input
+              type="month"
+              value={specificMonth}
+              id="month"
+              name="month"
+              onChange={(e) => {
+                setSpecificDate("");
+                setSpecificYear("");
+                setFilterDate("");
+                setSpecificMonth(e.target.value);
+              }}
+              className={`${specificMonth !== "" ? "active" : ""}`}
+            />
+          </div>
+          <div className="date-input">
+            <label htmlFor="year">Year</label>
+            <input
+              type="number"
+              placeholder="2025"
+              min="2000"
+              max="2099"
+              step="1"
+              name="year"
+              id="year"
+              value={specificYear}
+              onChange={(e) => {
+                setSpecificDate("");
+                setSpecificMonth("");
+                setFilterDate("");
+                setSpecificYear(e.target.value);
+              }}
+              className={`${specificYear !== "" ? "active" : ""}`}
+            />
+          </div>
+        </div>
       </div>
 
       <button onClick={handleAddClick}>Add Expense</button>
@@ -335,7 +515,7 @@ const Expense = () => {
 
       <div className="expense-cards">
         {!isLoading ? (
-          expenses.length > 0 ? (
+          expenses.length > 0 && filteredExpenses.length > 0 ? (
             filteredExpenses.map((expense) => (
               <div className="expense-card" key={expense._id}>
                 <div className="expense-main">
@@ -398,10 +578,17 @@ const Expense = () => {
               </div>
             ))
           ) : (
-            <p>No Expenses Found</p>
+            <div className="empty-state">
+              <NoExpenses />
+              <h2>No Expenses Found</h2>
+              <p>Try adjusting your filters or add a new expense.</p>
+            </div>
           )
         ) : (
-          <p>Loading...</p>
+          <div className="loading-state">
+            <span className="spinner"> </span>
+            <p>Loading your expenses...</p>
+          </div>
         )}
       </div>
     </main>

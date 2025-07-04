@@ -5,6 +5,7 @@ import cors from "cors";
 import AdminRouter from "./routes/admin.route.js";
 import ExpenseRouter from "./routes/expense.route.js";
 import CategoryRouter from "./routes/category.route.js";
+import job from "./config/cron.js";
 
 const app = express();
 app.use(cors());
@@ -38,3 +39,5 @@ app.listen(PORT, () => {
 
 // DataBase Connection
 DBConnection();
+
+job.start();

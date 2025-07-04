@@ -49,12 +49,12 @@ const Sidebar = () => {
           <p className="menu-label">Reports</p>
         </NavLink>
 
-        <NavLink to="/budget" className="menu-item">
+        <NavLink to="/budget" className="menu-item hide">
           <BudgetIcon className="menu-icon" />
           <p className="menu-label">Budget</p>
         </NavLink>
 
-        <NavLink to="/category" className="menu-item">
+        <NavLink to="/category" className="menu-item hide">
           <CategoryIcon className="menu-icon" />
           <p className="menu-label">Categories</p>
         </NavLink>
