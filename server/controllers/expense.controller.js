@@ -136,6 +136,77 @@ const months = [
   "December",
 ];
 
+// Analytics
+export const getRecentExpense = async (req, res) => {
+  try {
+    const expense = await expenseModel.find({ adminId: req.admin.id }).limit(6);
+
+    console.log(`Recent Expenses Fetched Successfully by ${req.admin.name}`);
+
+    res.status(201).json({ data: expense });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
+  }
+};
+
+export const getTotalExpense = async (req, res) => {
+  try {
+    const expense = await expenseModel.find({ adminId: req.admin.id });
+
+    const totalExpense = expense.reduce((acc, expense) => {
+      return acc + expense.amount;
+    }, 0);
+
+    console.log(
+      `Total Expenses - ${totalExpense}, Fetched Successfully by ${req.admin.name}`
+    );
+
+    res.status(201).json({ data: totalExpense });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
+  }
+};
+
+export const getAverageExpense = async (req, res) => {
+  try {
+    // This month everage
+    const currentMonth = new Date().getMonth();
+    const expense = await expenseModel.find({
+      adminId: req.admin.id,
+      date: {
+        $gte: new Date(new Date().getFullYear(), currentMonth, 1),
+        $lt: new Date(new Date().getFullYear(), currentMonth + 1, 1),
+      },
+    });
+
+    const totalExpense = expense.reduce((acc, expense) => {
+      return acc + expense.amount;
+    }, 0);
+
+    const averageExpense = totalExpense / expense.length;
+
+    console.log(
+      `Average Expense - ${averageExpense}, Fetched Successfully by ${req.admin.name}`
+    );
+
+    res.status(201).json({ data: averageExpense });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
+  }
+};
+
+export const DaySpendExpense = async (req, res) => {
+  try {
+    const expense = await expenseModel.find({ adminId: req.admin.id }).limit(6);
+
+    console.log(`Recent Expenses Fetched Successfully by ${req.admin.name}`);
+
+    res.status(201).json({ data: expense });
+  } catch (error) {
+    res.status(500).json({ error: `Internal Sever Error: ${error.message}` });
+  }
+};
+
 export const MonthlySpendExpense = async (req, res) => {
   let currentMonth = req.body?.month ? req.body.month : new Date().getMonth();
 

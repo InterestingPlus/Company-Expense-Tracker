@@ -1,0 +1,118 @@
+section#summary {
+  width: 100%;
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  background: #ffffffa6;
+  max-width: fit-content;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 2rem;
+    border-right: 1px solid #2a3fb41f;
+
+    .card {
+      display: flex;
+      gap: 0.6rem;
+
+      span.icon {
+        font-size: 1rem;
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgb(206, 206, 206);
+      }
+
+      div {
+        display: flex;
+        flex-direction: column;
+
+        h3 {
+          font-size: 1rem;
+        }
+
+        p {
+          font-size: 1.7rem;
+
+          span {
+            font-weight: 900;
+          }
+        }
+      }
+
+      &.expense {
+        span.icon {
+          background: #ff5512;
+        }
+        h3 {
+          color: #ca3939b4;
+        }
+        p {
+          color: #db6161;
+          //   color: #ff5b5b;
+        }
+      }
+
+      &.income {
+        span.icon {
+          background: #12be54;
+        }
+        h3 {
+          color: #198754bd;
+        }
+        p {
+          color: #41916d;
+          //   color: #32b86a;
+        }
+      }
+
+      &.balance {
+        span.icon {
+          background: #0d2accc7;
+        }
+        h3 {
+          color: #232e6c94;
+        }
+        p {
+          color: #316794c7;
+          //   color: #2586d6c7;
+        }
+      }
+    }
+  }
+
+  .chart {
+    max-width: 300px;
+  }
+}
+
+@media screen and (width < 990px) {
+  section#summary {
+    flex-direction: column;
+    gap: 2rem;
+    padding-top: 2rem;
+    min-width: 100%;
+
+    .info {
+      padding-right: 0;
+      padding-bottom: 1.7rem;
+      border-right: none;
+      border-bottom: 1px solid #2a3fb41f;
+    }
+
+    .chart {
+      width: 60vw;
+    }
+  }
+}

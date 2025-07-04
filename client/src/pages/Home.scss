@@ -1,0 +1,19 @@
+main#home {
+  background: rgb(244, 243, 255);
+
+  h2 {
+    color: #232e6c;
+    margin-bottom: 1rem;
+  }
+
+  .first {
+    display: flex;
+    flex-wrap: wrap;
+
+    align-items: start;
+    justify-content: start;
+    gap: 2rem;
+
+    margin-bottom: 2rem;
+  }
+}
