@@ -1,35 +1,30 @@
 section#yearlyBar {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
+  width: 100%;
+  max-width: 700px;
+  border-radius: 10px;
+  padding: 1rem;
 
-  .chart-card {
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  display: flex;
+  flex-direction: column;
+
+  .title {
+    display: flex;
     width: 100%;
-    border-radius: 10px;
-    padding: 1rem;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
 
-    background-color: rgb(255, 255, 255);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    h3 {
+      font-size: 1.5rem;
+      color: #232e6cb4;
+    }
 
-    // &.expense {
-    //   background-color: rgb(255, 203, 160);
-    // }
-
-    // &.income {
-    //   background-color: rgb(182, 231, 167);
-    // }
-
-    .title {
+    div.amount {
       display: flex;
-      width: 100%;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-
-      h3 {
-        font-size: 1.5rem;
-        color: #232e6cb4;
-      }
+      gap: 0.5rem;
 
       div {
         display: flex;
@@ -60,15 +55,15 @@ section#yearlyBar {
             font-weight: 700;
           }
         }
-      }
-    }
 
-    &.income {
-      span.icon {
-        background: #12be54 !important;
-      }
-      span.amount {
-        color: #0d9714 !important;
+        &.income {
+          span.icon {
+            background: #12be54 !important;
+          }
+          span.amount {
+            color: #0d9714 !important;
+          }
+        }
       }
     }
   }
@@ -76,8 +71,13 @@ section#yearlyBar {
 
 @media screen and (width < 990px) {
   section#yearlyBar {
-    grid-template-columns: 1fr;
     min-width: 100%;
+
+    div.title {
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.4rem;
+    }
 
     .chart-card {
       h3 {
@@ -92,7 +92,7 @@ section#yearlyBar {
           height: 30px !important;
         }
 
-        .amount {
+        span.amount {
           font-size: 1.3rem !important;
         }
       }

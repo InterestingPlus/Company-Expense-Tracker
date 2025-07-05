@@ -1,0 +1,71 @@
+.budget-tree-hierarchy {
+  font-family: "Segoe UI", sans-serif;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  color: #232e6c;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  ul {
+    padding-left: 1rem;
+    position: relative;
+    list-style: none;
+
+    // Vertical line
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0.75rem;
+      width: 2px;
+      height: 100%;
+      background: #dcdfe6;
+    }
+
+    li {
+      position: relative;
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+
+      // Horizontal connector
+      &::before {
+        content: "";
+        position: absolute;
+        top: 1rem;
+        left: 0;
+        width: 0.75rem;
+        height: 2px;
+        background: #dcdfe6;
+      }
+
+      .tree-node {
+        padding: 0.75rem 1rem;
+        // background-color: #f0f4ff;
+        // border-left: 4px solid #232e6c;
+        border-radius: 6px;
+        font-weight: 500;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      }
+
+      &.root .tree-node {
+        // background-color: #e3fff2;
+        // border-left-color: #00b894;
+        font-weight: bold;
+      }
+
+      &.parent .tree-node {
+        // background-color: #eef6ff;
+        // border-left-color: #6c5ce7;
+      }
+
+      &.child .tree-node {
+        // background-color: #f9faff;
+        // border-left-color: #74b9ff;
+      }
+    }
+  }
+}

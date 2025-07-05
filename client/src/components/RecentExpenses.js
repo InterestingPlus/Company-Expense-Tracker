@@ -22,7 +22,7 @@ const RecentExpenses = () => {
       console.log("All Expenses:", res?.data?.data);
       setExpenses(res?.data?.data);
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setLoading(false);
@@ -86,7 +86,7 @@ const RecentExpenses = () => {
       console.log("All Categories:", res?.data?.data);
       setCategories(res?.data?.data);
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 

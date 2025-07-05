@@ -8,7 +8,7 @@ import { ReactComponent as BalanceIcon } from "../assets/icons/balance.svg";
 
 import "./BalanceSummary.scss";
 
-const BalanceSummary = () => {
+const BalanceSummary = ({ ChartDataLabels, isMobile }) => {
   const chartData = {
     labels: ["expense", "income", "balance"],
     datasets: [
@@ -32,6 +32,30 @@ const BalanceSummary = () => {
           label: (context) =>
             `${context.label}: ₹${context.parsed.toLocaleString()}`,
         },
+      },
+    },
+  };
+
+  const optionsValues = {
+    responsive: true,
+    plugins: {
+      legend: { position: "bottom" },
+      datalabels: {
+        // anchor: "end",
+        // align: "top",
+        formatter: (value) => `₹${value}`, // Optional: format with currency
+        color: "#fff",
+        font: {
+          weight: "bold",
+        },
+      },
+      tooltip: {
+        enabled: false, // 👈 Disable tooltip if not needed
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
       },
     },
   };
@@ -80,7 +104,11 @@ const BalanceSummary = () => {
       </div>
 
       <div className="chart">
-        <Doughnut data={chartData} options={options} />
+        <Doughnut
+          data={chartData}
+          options={isMobile ? optionsValues : options}
+          plugins={isMobile ? [ChartDataLabels] : null}
+        />
       </div>
     </section>
   );

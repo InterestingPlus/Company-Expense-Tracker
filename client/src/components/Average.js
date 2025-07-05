@@ -21,7 +21,7 @@ const Average = () => {
 
       setAverageExpense(parseFloat(res?.data?.data).toFixed(2));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
   }
 
@@ -35,7 +35,7 @@ const Average = () => {
 
       setAverageIncome(parseFloat(res?.data?.data).toFixed(2));
     } catch (error) {
-      alert(error);
+      console.error(error);
     }
 
     setLoading(false);

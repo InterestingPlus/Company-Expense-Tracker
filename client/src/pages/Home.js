@@ -8,23 +8,53 @@ import BalanceSummary from "../components/BalanceSummary";
 
 import "./Home.scss";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+  ArcElement,
+} from "chart.js";
+
+import ChartDataLabels from "chartjs-plugin-datalabels";
+
+const isMobile = window.innerWidth < 990;
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+  ArcElement
+);
+
+if (isMobile) {
+  ChartJS.register(ChartDataLabels);
+}
+
 const Home = () => {
   return (
     <main id="home">
       <h2>📊 Dashboard</h2>
 
       <div className="first">
-        <BalanceSummary />
+        <BalanceSummary ChartDataLabels={ChartDataLabels} isMobile={isMobile} />
 
         <Average />
 
         <RecentExpenses />
       </div>
 
-      <YearlyBar />
+      <YearlyBar ChartDataLabels={ChartDataLabels} isMobile={isMobile} />
 
       <section id="charts">
-        <CategoryExpenseChart />
+        <CategoryExpenseChart
+          ChartDataLabels={ChartDataLabels}
+          isMobile={isMobile}
+        />
 
         <div>
           🔹 3. Payment Method Distribution

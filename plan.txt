@@ -60,11 +60,11 @@ Tools: date-fns, react-datepicker, MongoDB $text search
 📊 Day 4: Dashboard, Reports & Export
 📈 Goal: Visual insights + export capability.
 
- - Show analytics: total monthly/yearly expenses
+ ✅ Show analytics: total monthly/yearly expenses
 
- - Add Pie/Line/Bar charts for expenses
+ ✅ Add Pie/Line/Bar charts for expenses
 
- - Summary cards (monthly spend, highest category, etc.)
+ ✅ Summary cards (monthly spend, highest category, etc.)
 
  - Export expenses to CSV and PDF
 
@@ -86,9 +86,9 @@ Tools: recharts, chart.js, json2csv, jspdf, html2canvas
 
  - Final UI polish (Tailwind, responsive)
 
- - Host frontend on Vercel
+ ✅ Host frontend on Vercel
 
- - Host backend on Render or Cyclic
+ ✅ Host backend on Render or Cyclic
 
  - Test on mobile/desktop + fix bugs
 
@@ -105,3 +105,5 @@ Day	Focus Area	Key Modules
 4	Dashboard + Reports	Charts, Analytics, PDF/CSV export
 5	Budget Tree + Final Touch + Deploy	Visualization, Hosting, Debugging
 
+
+ 

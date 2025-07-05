@@ -1,20 +1,8 @@
 import React from "react";
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Tooltip,
-  Legend,
-  ArcElement,
-} from "chart.js";
-
 import { Pie } from "react-chartjs-2";
 
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-const CategoryExpenseChart = () => {
+const CategoryExpenseChart = ({ ChartDataLabels, isMobile }) => {
   const data = {
     // labels: categories.map((c) => c.name),
     labels: ["Food", "Transport", "Entertainment", "Other"],
@@ -39,7 +27,11 @@ const CategoryExpenseChart = () => {
       }}
     >
       Category-wise Spending
-      <Pie key={JSON.stringify(data)} data={data} />
+      <Pie
+        key={JSON.stringify(data)}
+        data={data}
+        plugins={isMobile ? [ChartDataLabels] : null}
+      />
     </div>
   );
 };
