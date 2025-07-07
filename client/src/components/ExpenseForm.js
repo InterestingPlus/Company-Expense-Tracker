@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./ExpenseForm.scss";
-import apiPath from "../isProduction";
-import axios from "axios";
+import axios from "../config/axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -67,11 +66,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
 
   async function getAllCategories() {
     try {
-      const res = await axios.get(`${await apiPath()}/api/v1/category`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.get("/category");
 
       console.log("All Categories:", res?.data?.data);
       setCategories(res?.data?.data);
@@ -114,16 +109,12 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
     uploadData.append("receipt", file);
 
     try {
-      const res = await axios.post(
-        `${await apiPath()}/api/v1/expense/upload`,
-        uploadData,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
+      const res = await axios.post("/expense/upload", uploadData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
       setFormData((prev) => ({
         ...prev,

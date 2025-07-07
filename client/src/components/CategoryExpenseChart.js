@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import apiPath from "../isProduction";
+import axios from "../config/axios";
 import { Pie } from "react-chartjs-2";
 import "./CategoryExpenseChart.scss";
 
@@ -36,11 +35,7 @@ const CategoryExpenseChart = ({ ChartDataLabels, isMobile, reportData }) => {
   useEffect(() => {
     async function getAllCategories() {
       try {
-        const res = await axios.get(`${await apiPath()}/api/v1/category`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const res = await axios.get("/category");
 
         setCategories(res?.data?.data || []);
       } catch (error) {

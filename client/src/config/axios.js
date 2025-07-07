@@ -1,9 +1,10 @@
 // src/config/axios.js
 import axios from "axios";
 import { toast } from "react-toastify";
+import apiPath from "../isProduction";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: `${apiPath()}/api/v1`,
 });
 
 // Automatically attach JWT to every request

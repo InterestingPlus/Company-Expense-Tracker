@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CategoryForm from "../components/CategoryForm";
-import axios from "axios";
-import apiPath from "../isProduction";
+import axios from "../config/axios";
 import { toast } from "react-toastify";
 import "./Category.scss";
 
@@ -46,11 +45,7 @@ const Category = () => {
     try {
       if (category.length === 0) setLoading(true);
 
-      const res = await axios.get(`${await apiPath()}/api/v1/category`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.get("/category");
 
       console.log("All Categories:", res?.data?.data);
       setCategory(res?.data?.data);
@@ -69,15 +64,7 @@ const Category = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        `${await apiPath()}/api/v1/category`,
-        category,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await axios.post("/category", category);
 
       toast.success("Category added successfully!");
       console.log("✅ Added:", res?.data?.data);
@@ -95,15 +82,7 @@ const Category = () => {
     console.log("Category to be edited:", category);
 
     try {
-      const res = await axios.put(
-        `${await apiPath()}/api/v1/category`,
-        category,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await axios.put("/category", category);
 
       toast.success("Category Updated successfully!");
       console.log("✅ Updated:", res?.data?.data);
@@ -119,10 +98,7 @@ const Category = () => {
     console.log("Category to be deleted:", category);
 
     try {
-      const res = await axios.delete(`${await apiPath()}/api/v1/category`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+      const res = await axios.delete("/category", {
         data: category,
       });
 
