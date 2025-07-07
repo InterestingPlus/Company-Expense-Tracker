@@ -8,12 +8,16 @@ import { ReactComponent as BalanceIcon } from "../assets/icons/balance.svg";
 
 import "./BalanceSummary.scss";
 
-const BalanceSummary = ({ ChartDataLabels, isMobile }) => {
+const BalanceSummary = ({ ChartDataLabels, isMobile, reportData = {} }) => {
   const chartData = {
     labels: ["expense", "income", "balance"],
     datasets: [
       {
-        data: [5000, 8000, 3000],
+        data: [
+          reportData?.totals?.expense || 0,
+          reportData?.totals?.income || 0,
+          reportData?.totals?.balance || 0,
+        ],
         backgroundColor: ["#ff5512", "#12be54", "#0d2accc7"],
         borderWidth: 1,
         cutout: "60%", // This makes it donut!
@@ -71,7 +75,7 @@ const BalanceSummary = ({ ChartDataLabels, isMobile }) => {
           <div>
             <h3>Total Expenses</h3>
             <p>
-              ₹<span>5000</span>
+              ₹<span>{reportData?.totals?.expense || 0}</span>
             </p>
           </div>
         </div>
@@ -84,7 +88,7 @@ const BalanceSummary = ({ ChartDataLabels, isMobile }) => {
           <div>
             <h3>Total Income</h3>
             <p>
-              ₹<span>8000</span>
+              ₹<span>{reportData?.totals?.income || 0}</span>
             </p>
           </div>
         </div>
@@ -97,7 +101,7 @@ const BalanceSummary = ({ ChartDataLabels, isMobile }) => {
           <div>
             <h3>Balance</h3>
             <p>
-              ₹<span>3000</span>
+              ₹<span>{reportData?.totals?.balance || 0}</span>
             </p>
           </div>
         </div>

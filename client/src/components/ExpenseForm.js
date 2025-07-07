@@ -3,9 +3,11 @@ import "./ExpenseForm.scss";
 import apiPath from "../isProduction";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     _id: "",
@@ -13,9 +15,9 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
     amount: "",
     notes: "",
     category: "",
-    date: "",
+    date: new Date().toISOString().split("T")[0],
     paymentMethod: "",
-    receipt: null,
+    receipt: "",
   });
 
   const [categories, setCategories] = useState([
@@ -54,9 +56,11 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
         amount: expense.amount || "",
         notes: expense.notes || "",
         category: expense.category || "",
-        date: expense.date?.substring(0, 10) || "",
+        date:
+          expense.date?.substring(0, 10) ||
+          new Date().toISOString().split("T")[0],
         paymentMethod: expense.paymentMethod || "",
-        receipt: null,
+        receipt: expense.receipt || "",
       });
     }
   }, [expense]);
@@ -81,12 +85,9 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
   }, []);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "receipt") {
-      setFormData({ ...formData, receipt: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    const { name, value } = e.target;
+
+    setFormData({ ...formData, [name]: value });
 
     if (name === "category") {
       if (value === "navigate") {
@@ -98,7 +99,46 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (isLoading) return;
+
     onSubmit(formData);
+  };
+
+  const handleFileUpload = async (e) => {
+    setIsLoading(true);
+
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const uploadData = new FormData();
+    uploadData.append("receipt", file);
+
+    try {
+      const res = await axios.post(
+        `${await apiPath()}/api/v1/expense/upload`,
+        uploadData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      setFormData((prev) => ({
+        ...prev,
+        receipt: res.data.url,
+      }));
+
+      toast.success("Receipt uploaded successfully!");
+    } catch (error) {
+      setFormData((prev) => ({ ...prev, receipt: "" }));
+
+      console.error("Upload failed:", error);
+      toast.error("Receipt upload failed");
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -106,7 +146,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       <h2>{formData._id ? "Edit Expense" : "Add New Expense"}</h2>
 
       <label>
-        Description
+        Description *
         <input
           name="description"
           value={formData.description}
@@ -117,7 +157,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Amount
+        Amount *
         <input
           name="amount"
           type="number"
@@ -139,7 +179,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Category
+        Category *
         <select
           name="category"
           value={formData.category}
@@ -159,7 +199,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Date
+        Date *
         <input
           name="date"
           type="date"
@@ -170,7 +210,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Payment Method
+        Payment Method *
         <select
           name="paymentMethod"
           value={formData.paymentMethod}
@@ -186,17 +226,24 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Receipt (optional)
+        Receipt ({isLoading ? "Uploading..." : "optional"})
         <input
           type="file"
           name="receipt"
           accept="image/*,application/pdf"
-          onChange={handleChange}
+          onChange={handleFileUpload}
         />
       </label>
 
       <div className="form-actions">
-        <button type="submit">{formData._id ? "Update" : "Add"}</button>
+        <button type="submit">
+          {formData._id ? "Update" : "Add"}{" "}
+          {isLoading ? (
+            <div className="loading-state">
+              <span className="spinner"> </span>
+            </div>
+          ) : null}
+        </button>
         <button type="button" onClick={onCancel}>
           Cancel
         </button>

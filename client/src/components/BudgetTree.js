@@ -2,7 +2,7 @@ import "./BudgetTree.scss";
 
 const BudgetTree = ({ totalBudget, categories }) => {
   return (
-    <div className="budget-tree-hierarchy">
+    <>
       <h2>🌳 Monthly Budget Tree</h2>
       <ul className="tree-root">
         <li className="tree-node root">
@@ -25,7 +25,7 @@ const BudgetTree = ({ totalBudget, categories }) => {
           </ul>
         </li>
       </ul>
-    </div>
+    </>
   );
 };
 

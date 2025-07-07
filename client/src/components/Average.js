@@ -1,51 +1,9 @@
-import { useEffect, useState } from "react";
-import apiPath from "../isProduction";
-import axios from "axios";
 import "./Average.scss";
 
 import { ReactComponent as ExpenseIcon } from "../assets/icons/expense2.svg";
 import { ReactComponent as IncomeIcon } from "../assets/icons/income2.svg";
 
-const Average = () => {
-  const [averageExpense, setAverageExpense] = useState();
-  const [averageIncome, setAverageIncome] = useState();
-  const [loading, setLoading] = useState(true);
-
-  async function getAverageExpense() {
-    try {
-      const res = await axios.get(`${await apiPath()}/api/v1/expense/average`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setAverageExpense(parseFloat(res?.data?.data).toFixed(2));
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function getAverageIncome() {
-    try {
-      const res = await axios.get(`${await apiPath()}/api/v1/expense/average`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      setAverageIncome(parseFloat(res?.data?.data).toFixed(2));
-    } catch (error) {
-      console.error(error);
-    }
-
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    getAverageExpense();
-    getAverageIncome();
-  }, []);
-
+const Average = ({ reportData }) => {
   return (
     <section id="average">
       <h2>Daily Average</h2>
@@ -59,7 +17,10 @@ const Average = () => {
           <div className="expense">
             <h3>Expense</h3>
             <p>
-              $<span>{averageExpense}</span>
+              ₹
+              <span>
+                {parseFloat(reportData?.dailyAverage?.expense || 0).toFixed(2)}
+              </span>
             </p>
           </div>
         </div>
@@ -72,7 +33,10 @@ const Average = () => {
           <div className="income">
             <h3>Income</h3>
             <p>
-              $<span>{averageIncome}</span>
+              ₹
+              <span>
+                {parseFloat(reportData?.dailyAverage?.income || 0).toFixed(2)}
+              </span>
             </p>
           </div>
         </div>

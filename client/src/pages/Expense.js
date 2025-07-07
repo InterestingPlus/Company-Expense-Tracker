@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import ExpenseForm from "../components/ExpenseForm";
-import axios from "axios";
-import apiPath from "../isProduction";
+import axios from "../config/axios";
 import { toast } from "react-toastify";
 import "./Expense.scss";
 
@@ -9,6 +8,7 @@ import { ReactComponent as EditIcon } from "../assets/icons/edit.svg";
 import { ReactComponent as DeleteIcon } from "../assets/icons/delete.svg";
 import { ReactComponent as NoExpenses } from "../assets/icons/no-data.svg";
 import { useNavigate } from "react-router-dom";
+import * as html2pdf from "html2pdf.js";
 
 const Expense = () => {
   const [isLoading, setLoading] = useState(true);
@@ -69,11 +69,7 @@ const Expense = () => {
     try {
       if (expenses.length === 0) setLoading(true);
 
-      const res = await axios.get(`${await apiPath()}/api/v1/expense`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.get("/expense");
 
       console.log("All Expenses:", res?.data?.data);
       setExpenses(res?.data?.data);
@@ -86,11 +82,7 @@ const Expense = () => {
 
   async function getAllCategories() {
     try {
-      const res = await axios.get(`${await apiPath()}/api/v1/category`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.get("/category");
 
       console.log("All Categories:", res?.data?.data);
       setCategories(res?.data?.data);
@@ -108,15 +100,7 @@ const Expense = () => {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        `${await apiPath()}/api/v1/expense`,
-        expense,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await axios.post("/expense", expense);
 
       toast.success("Expense added successfully!");
       console.log("✅ Added:", res?.data?.data);
@@ -134,15 +118,7 @@ const Expense = () => {
     console.log("Expense to be edited:", expense);
 
     try {
-      const res = await axios.put(
-        `${await apiPath()}/api/v1/expense`,
-        expense,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const res = await axios.put("/expense", expense);
 
       toast.success("Expense Updated successfully!");
       console.log("✅ Updated:", res?.data?.data);
@@ -158,10 +134,7 @@ const Expense = () => {
     console.log("Expense to be deleted:", expense);
 
     try {
-      const res = await axios.delete(`${await apiPath()}/api/v1/expense`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+      const res = await axios.delete("/expense", {
         data: expense,
       });
 
@@ -184,18 +157,26 @@ const Expense = () => {
     setEditExpense(expense);
     setOpenModal(true);
   };
+
+  // Search
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter
   const [filterCategory, setFilterCategory] = useState("");
   const [filterMethod, setFilterMethod] = useState("");
 
+  // Data Filters
   const [filterDate, setFilterDate] = useState("");
   const [specificDate, setSpecificDate] = useState("");
   const [specificMonth, setSpecificMonth] = useState("");
   const [specificYear, setSpecificYear] = useState("");
 
+  // Sort
   const [sortBy, setSortBy] = useState("");
 
+  // FilteredData
   const [filteredExpenses, setFilteredExpenses] = useState([]);
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
     let filtered = [...expenses];
@@ -337,161 +318,231 @@ const Expense = () => {
     );
   };
 
+  const [isPrinting, setIsPrinting] = useState(false);
+
+  function printExpenses() {
+    setIsPrinting(true);
+
+    setTimeout(() => {
+      setIsPrinting(true);
+
+      const element = document.getElementById("expense-print-table");
+      const today = new Date();
+      const month = today.toLocaleString("default", { month: "long" });
+      const year = today.getFullYear();
+
+      const opt = {
+        margin: [0.5, 0.5, 0.7, 0.5],
+        filename: `Expenses Report - ${month} ${year}.pdf`,
+        image: { type: "jpeg", quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "in", format: "a4", orientation: "landscape" },
+        pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+      };
+
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
+          const totalPages = pdf.internal.getNumberOfPages();
+          const footer = "Company Expense Tracker | Jatin Poriya";
+
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(10);
+            pdf.setTextColor(150);
+            pdf.text(
+              footer,
+              pdf.internal.pageSize.getWidth() / 2,
+              pdf.internal.pageSize.getHeight() - 0.3,
+              { align: "center" }
+            );
+          }
+        })
+        .then((pdf) => {
+          html2pdf().set(opt).from(element).save();
+        });
+    }, 2000);
+
+    setTimeout(() => {
+      setIsPrinting(false);
+    }, 5000);
+  }
+
   return (
     <main id="expense">
       <h1>Expenses</h1>
 
-      <div className="filters">
-        <div className="search-filter">
-          <div className="search">
-            <input
-              type="search"
-              id="search"
-              placeholder="Search..."
-              onInput={(e) => {
-                setSearchQuery(e.target.value);
-              }}
-            />
-          </div>
+      <div className="action">
+        <button onClick={handleAddClick} className="add-expense">
+          Add Expense
+        </button>
 
-          <div className="filter">
-            <select
-              value={filterDate}
-              onChange={(e) => {
-                setSpecificDate("");
-                setSpecificMonth("");
-                setSpecificYear("");
-                setFilterDate(e.target.value);
-              }}
-              className={`${filterDate !== "" ? "active" : ""}`}
-            >
-              <option value="">All Time</option>
-              <option value="today">Today</option>
-              <option value="thisMonth">This Month</option>
-              <option value="thisYear">This Year</option>
-            </select>
+        <button onClick={printExpenses}>🖨 Print Expenses</button>
 
-            <select
-              value={filterCategory}
-              onChange={(e) => {
-                if (e.target.value === "navigate") {
-                  navigate("/category");
-                }
-
-                setFilterCategory(e.target.value);
-              }}
-              className={`${filterCategory !== "" ? "active" : ""}`}
-            >
-              <option value="">All Categories</option>
-              {categories.map((category) => (
-                <option key={category._id} value={category._id}>
-                  {category.icon} {category.name}
-                </option>
-              ))}
-              <option value="navigate">Modify Categories</option>
-            </select>
-
-            <select
-              value={filterMethod}
-              onChange={(e) => setFilterMethod(e.target.value)}
-              className={`${filterMethod !== "" ? "active" : ""}`}
-            >
-              <option value="">All Methods</option>
-              {paymentMethods.map((method) => (
-                <option key={method._id} value={method.name}>
-                  {method.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="sort">
-          <span>Sort By :</span>
-          <input
-            type="radio"
-            name="sortBy"
-            value=""
-            id="none"
-            onChange={(e) => setSortBy(e.target.value)}
-          />
-          <label htmlFor="none">none</label>
-          <input
-            type="radio"
-            name="sortBy"
-            value="amount"
-            id="amount"
-            onChange={(e) => setSortBy(e.target.value)}
-          />
-          <label htmlFor="amount">Amount</label>
-          <input
-            type="radio"
-            name="sortBy"
-            value="date"
-            id="date"
-            onChange={(e) => setSortBy(e.target.value)}
-          />
-          <label htmlFor="date">Date</label>
-        </div>
-
-        <div className="date-filters">
-          Specific :
-          <div className="date-input">
-            <label htmlFor="date">Day</label>
-            <input
-              type="date"
-              name="date"
-              id="date"
-              value={specificDate}
-              onChange={(e) => {
-                setSpecificMonth("");
-                setSpecificYear("");
-                setFilterDate("");
-                setSpecificDate(e.target.value);
-              }}
-              className={`${specificDate !== "" ? "active" : ""}`}
-            />
-          </div>
-          <div className="date-input">
-            <label htmlFor="month">Month</label>
-            <input
-              type="month"
-              value={specificMonth}
-              id="month"
-              name="month"
-              onChange={(e) => {
-                setSpecificDate("");
-                setSpecificYear("");
-                setFilterDate("");
-                setSpecificMonth(e.target.value);
-              }}
-              className={`${specificMonth !== "" ? "active" : ""}`}
-            />
-          </div>
-          <div className="date-input">
-            <label htmlFor="year">Year</label>
-            <input
-              type="number"
-              placeholder="2025"
-              min="2000"
-              max="2099"
-              step="1"
-              name="year"
-              id="year"
-              value={specificYear}
-              onChange={(e) => {
-                setSpecificDate("");
-                setSpecificMonth("");
-                setFilterDate("");
-                setSpecificYear(e.target.value);
-              }}
-              className={`${specificYear !== "" ? "active" : ""}`}
-            />
-          </div>
-        </div>
+        <button
+          className="toggle-filter"
+          onClick={() => setShowFilters((prev) => !prev)}
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
       </div>
 
-      <button onClick={handleAddClick}>Add Expense</button>
+      <div className="filters">
+        {showFilters && (
+          <>
+            <div className="search-filter">
+              <div className="search">
+                <input
+                  type="search"
+                  id="search"
+                  placeholder="Search..."
+                  onInput={(e) => {
+                    setSearchQuery(e.target.value);
+                  }}
+                />
+              </div>
+
+              <div className="filter">
+                <select
+                  value={filterDate}
+                  onChange={(e) => {
+                    setSpecificDate("");
+                    setSpecificMonth("");
+                    setSpecificYear("");
+                    setFilterDate(e.target.value);
+                  }}
+                  className={`${filterDate !== "" ? "active" : ""}`}
+                >
+                  <option value="">All Time</option>
+                  <option value="today">Today</option>
+                  <option value="thisMonth">This Month</option>
+                  <option value="thisYear">This Year</option>
+                </select>
+
+                <select
+                  value={filterCategory}
+                  onChange={(e) => {
+                    if (e.target.value === "navigate") {
+                      navigate("/category");
+                    }
+
+                    setFilterCategory(e.target.value);
+                  }}
+                  className={`${filterCategory !== "" ? "active" : ""}`}
+                >
+                  <option value="">All Categories</option>
+                  {categories.map((category) => (
+                    <option key={category._id} value={category._id}>
+                      {category.icon} {category.name}
+                    </option>
+                  ))}
+                  <option value="navigate">Modify Categories</option>
+                </select>
+
+                <select
+                  value={filterMethod}
+                  onChange={(e) => setFilterMethod(e.target.value)}
+                  className={`${filterMethod !== "" ? "active" : ""}`}
+                >
+                  <option value="">All Methods</option>
+                  {paymentMethods.map((method) => (
+                    <option key={method._id} value={method.name}>
+                      {method.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="sort">
+              <span>Sort By :</span>
+              <input
+                type="radio"
+                name="sortBy"
+                value=""
+                id="none"
+                onChange={(e) => setSortBy(e.target.value)}
+              />
+              <label htmlFor="none">none</label>
+              <input
+                type="radio"
+                name="sortBy"
+                value="amount"
+                id="amount"
+                onChange={(e) => setSortBy(e.target.value)}
+              />
+              <label htmlFor="amount">Amount</label>
+              <input
+                type="radio"
+                name="sortBy"
+                value="date"
+                id="date"
+                onChange={(e) => setSortBy(e.target.value)}
+              />
+              <label htmlFor="date">Date</label>
+            </div>
+
+            <div className="date-filters">
+              Specific :
+              <div className="date-input">
+                <label htmlFor="date">Day</label>
+                <input
+                  type="date"
+                  name="date"
+                  id="date"
+                  value={specificDate}
+                  onChange={(e) => {
+                    setSpecificMonth("");
+                    setSpecificYear("");
+                    setFilterDate("");
+                    setSpecificDate(e.target.value);
+                  }}
+                  className={`${specificDate !== "" ? "active" : ""}`}
+                />
+              </div>
+              <div className="date-input">
+                <label htmlFor="month">Month</label>
+                <input
+                  type="month"
+                  value={specificMonth}
+                  id="month"
+                  name="month"
+                  onChange={(e) => {
+                    setSpecificDate("");
+                    setSpecificYear("");
+                    setFilterDate("");
+                    setSpecificMonth(e.target.value);
+                  }}
+                  className={`${specificMonth !== "" ? "active" : ""}`}
+                />
+              </div>
+              <div className="date-input">
+                <label htmlFor="year">Year</label>
+                <input
+                  type="number"
+                  placeholder="2025"
+                  min="2000"
+                  max="2099"
+                  step="1"
+                  name="year"
+                  id="year"
+                  value={specificYear}
+                  onChange={(e) => {
+                    setSpecificDate("");
+                    setSpecificMonth("");
+                    setFilterDate("");
+                    setSpecificYear(e.target.value);
+                  }}
+                  className={`${specificYear !== "" ? "active" : ""}`}
+                />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
 
       {openModal && (
         <div id="expense-modal">
@@ -590,6 +641,47 @@ const Expense = () => {
             <p>Loading your expenses...</p>
           </div>
         )}
+      </div>
+
+      {/* Tablur Format */}
+      <div
+        id="expense-print-table"
+        style={{ display: `${isPrinting ? "block" : "none"}` }}
+      >
+        <h1 style={{ textAlign: "center", marginBottom: "10px" }}>
+          Expenses Report
+        </h1>
+
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Category</th>
+              <th>Payment Method</th>
+              <th>Date</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredExpenses.map((exp) => (
+              <tr key={exp._id}>
+                <td>{exp.description}</td>
+                <td>₹{exp.amount}</td>
+                <td>{categoryName(exp.category)}</td>
+                <td>{exp.paymentMethod}</td>
+                <td>
+                  {new Date(exp.date).toLocaleDateString("en-IN", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </td>
+                <td>{exp.notes || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </main>
   );

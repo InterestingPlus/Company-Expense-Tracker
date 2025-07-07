@@ -5,33 +5,7 @@ import { Link } from "react-router-dom";
 
 import "./RecentExpenses.scss";
 
-const RecentExpenses = () => {
-  const [expenses, setExpenses] = useState([]);
-  const [isLoading, setLoading] = useState(true);
-
-  async function getRecentExpenses() {
-    try {
-      if (expenses.length === 0) setLoading(true);
-
-      const res = await axios.get(`${await apiPath()}/api/v1/expense`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
-
-      console.log("All Expenses:", res?.data?.data);
-      setExpenses(res?.data?.data);
-    } catch (error) {
-      console.error(error);
-    }
-
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    getRecentExpenses();
-  }, []);
-
+const RecentExpenses = ({ reportData }) => {
   const months = [
     "Jan",
     "Feb",
@@ -83,7 +57,7 @@ const RecentExpenses = () => {
         },
       });
 
-      console.log("All Categories:", res?.data?.data);
+      // console.log("All Categories:", res?.data?.data);
       setCategories(res?.data?.data);
     } catch (error) {
       console.error(error);
@@ -97,43 +71,40 @@ const RecentExpenses = () => {
   return (
     <section id="recent">
       <div>
-        <h3>Recent Expenses</h3>
+        <h3>Recent Transactions</h3>
         <Link to="/expense" title="View All">
           View All {">"}
         </Link>
       </div>
-      <ul>
-        {!isLoading ? (
-          expenses?.length > 0 ? (
-            expenses?.map((expense) => {
-              return (
-                <li>
-                  <span className="expense-icon">
-                    {categories.find(
-                      (category) => category._id === expense?.category
-                    )?.icon || "d"}
-                  </span>
 
-                  <div className="expense-info">
-                    <h4>{expense?.description}</h4>
-                    <span>
-                      {new Date(expense.date).getDate()}
-                      {", "}
-                      {months[new Date(expense.date).getMonth()]}
-                    </span>
-                  </div>
-                  <h5>₹{expense?.amount}</h5>
-                </li>
-              );
-            })
-          ) : (
-            <h2>No Expenses Found</h2>
-          )
+      <ul>
+        {reportData?.recent?.length > 0 ? (
+          reportData?.recent?.map((transaction) => (
+            <li key={transaction._id || transaction.date + transaction.amount}>
+              <span className="transaction-icon">
+                {categories.find(
+                  (category) => category._id === transaction?.category
+                )?.icon || "❔"}
+              </span>
+
+              <div className="transaction-info">
+                <h4>{transaction?.description}</h4>
+                <span>
+                  {new Date(transaction.date).getDate()}
+                  {", "}
+                  {months[new Date(transaction.date).getMonth()]}
+                </span>
+              </div>
+              <h5
+                className={transaction.type === "income" ? "income" : "expense"}
+              >
+                {transaction.type === "income" ? "+" : "-"} ₹
+                {transaction?.amount}
+              </h5>
+            </li>
+          ))
         ) : (
-          <div className="loading-state">
-            <span className="spinner"> </span>
-            <p>Loading Recent Expenses...</p>
-          </div>
+          <h2>No Transactions Found</h2>
         )}
       </ul>
     </section>

@@ -1,0 +1,63 @@
+main {
+  display: flex;
+  flex-direction: column;
+
+  .control {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+
+    margin-top: 2rem;
+
+    gap: 1rem;
+
+    div {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: nowrap;
+      align-items: center;
+
+      input {
+        padding: 0.3rem 1.4rem;
+        margin: 0;
+        border: 1px solid #20367d;
+        background: #f1f1f1;
+        border-radius: 20px;
+      }
+    }
+
+    button {
+      margin: 0;
+      font-weight: 600;
+
+      letter-spacing: 1px;
+
+      &:hover {
+        background: #5377eb;
+      }
+    }
+
+    margin-bottom: 2rem;
+  }
+
+  section#charts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+
+    max-height: unset;
+    overflow: visible;
+  }
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+}

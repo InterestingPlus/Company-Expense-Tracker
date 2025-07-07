@@ -6,23 +6,62 @@ import { Bar } from "react-chartjs-2";
 import { ReactComponent as ExpenseIcon } from "../assets/icons/expense2.svg";
 import { ReactComponent as IncomeIcon } from "../assets/icons/income2.svg";
 
-const YearlyBar = ({ ChartDataLabels, isMobile }) => {
+const YearlyBar = ({ ChartDataLabels, isMobile, reportData }) => {
+  const months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  const isExpense =
+    reportData?.monthly?.expenses?.length >
+    reportData?.monthly?.incomes?.length;
+  const maxLength = isExpense
+    ? reportData?.monthly?.expenses.length
+    : reportData?.monthly?.incomes.length;
+
+  const monthlyLabels = isExpense
+    ? reportData?.monthly?.expenses.map((entry) => {
+        const month = entry?._id?.month - 1;
+        const year = entry?._id?.year;
+        return `${months[month]} ${year}`;
+      })
+    : reportData?.monthly?.incomes.map((entry) => {
+        const month = entry?._id?.month - 1;
+        const year = entry?._id?.year;
+        return `${months[month]} ${year}`;
+      }) || [];
+
+  const monthlyExpenseData =
+    reportData?.monthly?.expenses?.map((entry) => entry.total)?.reverse() || [];
+
+  const monthlyIncomeData =
+    reportData?.monthly?.incomes?.map((entry) => entry.total)?.reverse() || [];
+
+  const totalExpense = monthlyExpenseData.reduce((a, b) => a + b, 0);
+  const totalIncome = monthlyIncomeData.reduce((a, b) => a + b, 0);
+
   const chartData = {
-    labels: ["March", "April", "May", "Jun", "July"], // e.g. ["Jan", "Feb", "Mar"]
+    labels: monthlyLabels,
     datasets: [
       {
         label: "Expense",
-        data: [5000, 3200, 4800, 6300, 7000], // e.g. [5000, 3200, 4800]
+        data: monthlyExpenseData,
         backgroundColor: "#e74a3b",
-        // "#4e73df",
-        // "#1cc88a",
-        // "#36b9cc",
-        // "#f6c23e",
         borderRadius: 5,
       },
       {
         label: "Income",
-        data: [9000, 3520, 3000, 5000, 9500], // e.g. [5000, 3200, 4800]
+        data: monthlyIncomeData,
         backgroundColor: "#4e73df",
         borderRadius: 5,
       },
@@ -70,37 +109,47 @@ const YearlyBar = ({ ChartDataLabels, isMobile }) => {
   };
 
   return (
-    <section id="yearlyBar">
-      <div className="title">
-        <h3>Last 5 Month</h3>
+    <>
+      {maxLength > 1 && (
+        <section id="yearlyBar">
+          <div className="title">
+            <h3>
+              Last{" "}
+              {isExpense
+                ? reportData?.monthly?.expenses.length
+                : reportData?.monthly?.incomes.length}{" "}
+              Month
+            </h3>
 
-        <div className="amount">
-          <div className="expense">
-            <span className="icon">
-              <ExpenseIcon />
-            </span>
-            <span className="amount">
-              ₹<h4>50000</h4>
-            </span>
+            <div className="amount">
+              <div className="expense">
+                <span className="icon">
+                  <ExpenseIcon />
+                </span>
+                <span className="amount">
+                  ₹<h4>{totalExpense.toLocaleString("en-IN")}</h4>
+                </span>
+              </div>
+
+              <div className="income">
+                <span className="icon">
+                  <IncomeIcon />
+                </span>
+                <span className="amount">
+                  ₹<h4>{totalIncome.toLocaleString("en-IN")}</h4>
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="income">
-            <span className="icon">
-              <IncomeIcon />
-            </span>
-            <span className="amount">
-              ₹<h4>75000</h4>
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <Bar
-        data={chartData}
-        options={isMobile ? optionsValues : options}
-        plugins={isMobile ? [ChartDataLabels] : null}
-      />
-    </section>
+          <Bar
+            data={chartData}
+            options={isMobile ? optionsValues : options}
+            plugins={isMobile ? [ChartDataLabels] : null}
+          />
+        </section>
+      )}
+    </>
   );
 };
 

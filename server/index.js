@@ -7,6 +7,8 @@ import ExpenseRouter from "./routes/expense.route.js";
 import CategoryRouter from "./routes/category.route.js";
 import job from "./config/cron.js";
 import BudgetRouter from "./routes/budget.route.js";
+import ReportRouter from "./routes/report.route.js";
+import IncomeRouter from "./routes/income.route.js";
 
 const app = express();
 app.use(cors());
@@ -28,8 +30,10 @@ app.get("/", (req, res) => {
 // Admin Route
 app.use("/api/v1/admin", AdminRouter);
 app.use("/api/v1/expense", ExpenseRouter);
+app.use("/api/v1/income", IncomeRouter);
 app.use("/api/v1/category", CategoryRouter);
 app.use("/api/v1/budget", BudgetRouter);
+app.use("/api/v1/report", ReportRouter);
 
 // Expense Route
 // app.use("api/v1/expense", ExpenseRouter);

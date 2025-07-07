@@ -5,12 +5,44 @@
     color: #232e6c;
   }
 
+  div.action {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    margin-bottom: 2rem;
+
+    button {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 !important;
+    }
+
+    button.toggle-filter {
+      background: #fff;
+      color: #0c328d;
+      border: 2px solid #0c328d;
+
+      &:hover {
+        color: #fff;
+        border: 2px solid transparent;
+        background: #0c328d;
+      }
+    }
+
+    button.add-expense {
+      background: #0c328d;
+    }
+  }
+
   .filters {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     flex-wrap: wrap;
     width: 100%;
+
+    margin-bottom: 2rem;
 
     input[type="search"] {
       padding: 0.5rem 1rem;
@@ -202,6 +234,7 @@
     padding: 1.25rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     transition: 0.3s ease;
+    padding-bottom: 0 !important;
 
     &:hover {
       transform: translateY(-3px);
@@ -341,5 +374,12 @@
     input {
       margin-left: 0.7rem !important;
     }
+  }
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

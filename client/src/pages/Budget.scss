@@ -1,5 +1,26 @@
+button {
+  margin-top: 1rem;
+
+  padding: 0.5rem 1rem;
+  background: #232e6c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.budget-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
 .setBudget {
-  padding: 2rem;
+  padding: 1rem;
   max-width: 700px;
   margin: auto;
 
@@ -27,19 +48,43 @@
     margin-left: 1rem;
   }
 
-  button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
-    background: #232e6c;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+  .add {
+    margin-right: 0.8rem;
   }
 
   h2 {
     margin-bottom: 1rem;
     text-align: center;
     color: #232e6c;
+  }
+
+  div.control {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    padding: 0;
+
+    button {
+      margin: 0 !important;
+    }
+  }
+}
+
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #budget {
+    page-break-after: auto;
+    page-break-inside: avoid;
+  }
+
+  .tree,
+  .setBudget {
+    padding: 1rem;
+    font-size: 14px;
   }
 }

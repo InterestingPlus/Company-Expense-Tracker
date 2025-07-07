@@ -1,39 +1,96 @@
 import { useEffect, useState } from "react";
 import "./ExpenseForm.scss";
+import apiPath from "../isProduction";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
-const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
+const IncomeForm = ({ income = {}, onSubmit, onCancel }) => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     _id: "",
     description: "",
     amount: "",
     notes: "",
     category: "",
-    date: "",
+    date: new Date().toISOString().split("T")[0],
     paymentMethod: "",
-    receipt: null,
   });
 
+  const [categories, setCategories] = useState([
+    {
+      _id: "a1",
+      name: "Shopping",
+      icon: "🛍️",
+    },
+    {
+      _id: "b2",
+      name: "Food",
+      icon: "🍔",
+    },
+    {
+      _id: "c3",
+      name: "Travel",
+      icon: "🚗",
+    },
+    {
+      _id: "d4",
+      name: "Rent",
+      icon: "🏠",
+    },
+    {
+      _id: "e5",
+      name: "Misc",
+      icon: "📦",
+    },
+  ]);
+
   useEffect(() => {
-    if (expense?._id) {
+    if (income?._id) {
       setFormData({
-        _id: expense._id,
-        description: expense.description || "",
-        amount: expense.amount || "",
-        notes: expense.notes || "",
-        category: expense.category || "",
-        date: expense.date?.substring(0, 10) || "",
-        paymentMethod: expense.paymentMethod || "",
-        receipt: null,
+        _id: income._id,
+        description: income.description || "",
+        amount: income.amount || "",
+        notes: income.notes || "",
+        category: income.category || "",
+        date:
+          income.date?.substring(0, 10) ||
+          new Date().toISOString().split("T")[0],
+        paymentMethod: income.paymentMethod || "",
       });
     }
-  }, [expense]);
+  }, [income]);
+
+  async function getAllCategories() {
+    try {
+      const res = await axios.get(`${await apiPath()}/api/v1/category`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      console.log("All Categories:", res?.data?.data);
+      setCategories(res?.data?.data);
+    } catch (error) {
+      toast.error(error);
+      alert(error);
+    }
+  }
+
+  useEffect(() => {
+    getAllCategories();
+  }, []);
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "receipt") {
-      setFormData({ ...formData, receipt: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
+    const { name, value } = e.target;
+
+    setFormData({ ...formData, [name]: value });
+
+    if (name === "category") {
+      if (value === "navigate") {
+        navigate("/category");
+      }
     }
   };
 
@@ -44,11 +101,11 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
   };
 
   return (
-    <form className="expense-form" onSubmit={handleSubmit}>
-      <h2>{formData._id ? "Edit Expense" : "Add New Expense"}</h2>
+    <form className="income-form" onSubmit={handleSubmit}>
+      <h2>{formData._id ? "Edit Income" : "Add New Income"}</h2>
 
       <label>
-        Description
+        Description *
         <input
           name="description"
           value={formData.description}
@@ -59,7 +116,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Amount
+        Amount *
         <input
           name="amount"
           type="number"
@@ -81,7 +138,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Category
+        Category *
         <select
           name="category"
           value={formData.category}
@@ -89,16 +146,19 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
           required
         >
           <option value="">Select category</option>
-          <option value="Shopping">Shopping</option>
-          <option value="Food">Food</option>
-          <option value="Travel">Travel</option>
-          <option value="Rent">Rent</option>
-          <option value="Misc">Misc</option>
+
+          {categories?.map((category) => (
+            <option value={category._id}>
+              {category.icon} {category.name}
+            </option>
+          ))}
+
+          <option value="navigate">Modify Categories</option>
         </select>
       </label>
 
       <label>
-        Date
+        Date *
         <input
           name="date"
           type="date"
@@ -109,7 +169,7 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
       </label>
 
       <label>
-        Payment Method
+        Payment Method *
         <select
           name="paymentMethod"
           value={formData.paymentMethod}
@@ -119,19 +179,9 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
           <option value="">Select payment method</option>
           <option value="Cash">Cash</option>
           <option value="UPI">UPI</option>
-          <option value="Bank Transfer">Bank Transfer</option>
+          <option value="Bank">Bank</option>
           <option value="Card">Card</option>
         </select>
-      </label>
-
-      <label>
-        Receipt (optional)
-        <input
-          type="file"
-          name="receipt"
-          accept="image/*,application/pdf"
-          onChange={handleChange}
-        />
       </label>
 
       <div className="form-actions">
@@ -144,4 +194,4 @@ const ExpenseForm = ({ expense = {}, onSubmit, onCancel }) => {
   );
 };
 
-export default ExpenseForm;
+export default IncomeForm;

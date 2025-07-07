@@ -148,11 +148,14 @@ const Category = () => {
 
   return (
     <main id="category">
-      <h1>Income</h1>
+      <h1>Manage Categories</h1>
 
-      <input type="search" placeholder="Search..." />
-
-      <button onClick={handleAddClick}>Add Category</button>
+      <button
+        onClick={handleAddClick}
+        style={{ maxWidth: "300px", width: "100%" }}
+      >
+        + Add Category
+      </button>
 
       {openModal && (
         <div id="category-modal">
@@ -181,10 +184,9 @@ const Category = () => {
               <div className="category-card" key={category._id}>
                 <div className="category-main">
                   <div className="category-title">
+                    <span>{category.icon && `${category.icon}`}</span>
                     <h3>{category.name}</h3>
                   </div>
-
-                  <span>{category.icon && `${category.icon}`}</span>
 
                   <div className="category-actions">
                     <button

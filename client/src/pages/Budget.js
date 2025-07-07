@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "./Budget.scss";
-import apiPath from "../isProduction";
-
 import BudgetTree from "../components/BudgetTree";
+import axios from "../config/axios";
+
+import { ReactComponent as EditIcon } from "../assets/icons/edit.svg";
+import "./Budget.scss";
+import * as html2pdf from "html2pdf.js";
 
 const Budget = () => {
   const [modify, setModify] = useState(false);
@@ -31,11 +32,7 @@ const Budget = () => {
 
   async function getBudget() {
     try {
-      const res = await axios.get(`${await apiPath()}/api/v1/budget`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const res = await axios.get("budget");
 
       console.log(res?.data);
 
@@ -50,18 +47,10 @@ const Budget = () => {
 
   async function updateBudget() {
     try {
-      await axios.put(
-        `${await apiPath()}/api/v1/budget`,
-        {
-          totalBudget,
-          categories,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      await axios.put("budget", {
+        totalBudget,
+        categories,
+      });
     } catch (error) {
       console.log("Error Setting up Budget:", error);
     }
@@ -92,15 +81,70 @@ const Budget = () => {
     setCategories(copy);
   };
 
+  function printBudget() {
+    const element = document.querySelector(".budget-tree-hierarchy");
+
+    const today = new Date();
+    const month = today.toLocaleString("default", { month: "long" });
+    const year = today.getFullYear();
+
+    const opt = {
+      margin: [0.5, 0.5, 0.7, 0.5], // Top, left, bottom, right (in inches)
+      filename: `Budget Tree - ${month} ${year}.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+      },
+      jsPDF: {
+        unit: "in",
+        format: "a4",
+        orientation: "portrait",
+      },
+      pagebreak: { mode: ["avoid-all", "css", "legacy"] },
+    };
+
+    html2pdf()
+      .set(opt)
+      .from(element)
+      .toPdf()
+      .get("pdf")
+      .then((pdf) => {
+        const totalPages = pdf.internal.getNumberOfPages();
+        const footer = "Company Expense Tracker | Jatin Poriya";
+
+        for (let i = 1; i <= totalPages; i++) {
+          pdf.setPage(i);
+          pdf.setFontSize(10);
+          pdf.setTextColor(150);
+          pdf.text(
+            footer,
+            pdf.internal.pageSize.getWidth() / 2,
+            pdf.internal.pageSize.getHeight() - 0.3,
+            { align: "center" }
+          );
+        }
+      })
+      .then(function (pdf) {
+        html2pdf().set(opt).from(element).save();
+      });
+  }
+
   return (
     <main id="budget">
       <h1> Monthly Budget </h1>
 
       {!modify ? (
         <section className="tree">
-          <button onClick={() => setModify(true)}>Modify</button>
+          <button onClick={() => setModify(true)}>
+            {" "}
+            <EditIcon /> Modify
+          </button>
+          <button onClick={printBudget}> 🖨 Print</button>
 
-          <BudgetTree totalBudget={totalBudget} categories={categories} />
+          <div className="budget-tree-hierarchy">
+            <BudgetTree totalBudget={totalBudget} categories={categories} />
+          </div>
         </section>
       ) : (
         <section className="setBudget">
@@ -161,20 +205,25 @@ const Budget = () => {
             ))}
           </div>
 
-          <button onClick={addCategory}>+ Add Category</button>
-          <button
-            onClick={() => {
-              updateBudget();
+          <div className="control">
+            <button onClick={addCategory} className="add">
+              {" "}
+              + Add Category
+            </button>
+            <button
+              onClick={() => {
+                updateBudget();
 
-              console.log({
-                totalBudget,
-                categories,
-              });
-              setModify(false);
-            }}
-          >
-            ✅ Save Tree
-          </button>
+                console.log({
+                  totalBudget,
+                  categories,
+                });
+                setModify(false);
+              }}
+            >
+              ✅ Save Tree
+            </button>
+          </div>
         </section>
       )}
     </main>

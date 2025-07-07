@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./ExpenseForm.scss";
+import "./CategoryForm.scss";
 
 const CategoryForm = ({ category = {}, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -35,7 +35,7 @@ const CategoryForm = ({ category = {}, onSubmit, onCancel }) => {
 
   return (
     <form className="category-form" onSubmit={handleSubmit}>
-      <h2>{formData._id ? "Edit Expense" : "Add New Expense"}</h2>
+      <h2>{formData._id ? "Edit Category" : "Add New Category"}</h2>
 
       <label>
         Name
@@ -44,6 +44,7 @@ const CategoryForm = ({ category = {}, onSubmit, onCancel }) => {
           value={formData.name}
           onChange={handleChange}
           placeholder="Enter Category Name"
+          maxLength={20}
           required
         />
       </label>
@@ -55,6 +56,7 @@ const CategoryForm = ({ category = {}, onSubmit, onCancel }) => {
           value={formData.icon}
           onChange={handleChange}
           placeholder="Enter Icon"
+          maxLength={1}
         />
       </label>
 
