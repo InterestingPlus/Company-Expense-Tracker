@@ -56,7 +56,7 @@ const CategoryForm = ({ category = {}, onSubmit, onCancel }) => {
           value={formData.icon}
           onChange={handleChange}
           placeholder="Enter Icon"
-          maxLength={1}
+          maxLength={4}
         />
       </label>
 

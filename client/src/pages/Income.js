@@ -489,7 +489,7 @@ const Income = () => {
       </div>
 
       {openModal && (
-        <div id="income-modal">
+        <div id="expense-modal">
           <IncomeForm
             income={editIncome}
             onCancel={() => {

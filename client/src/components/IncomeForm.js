@@ -96,7 +96,7 @@ const IncomeForm = ({ income = {}, onSubmit, onCancel }) => {
   };
 
   return (
-    <form className="income-form" onSubmit={handleSubmit}>
+    <form className="expense-form" onSubmit={handleSubmit}>
       <h2>{formData._id ? "Edit Income" : "Add New Income"}</h2>
 
       <label>
